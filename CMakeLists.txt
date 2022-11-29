@@ -43,7 +43,8 @@ FetchContent_MakeAvailable(googletest)
 # mycpp
 add_executable(
         mycpp
-        src/main.cpp)
+        src/main.cpp
+)
 
 target_link_libraries(
         mycpp

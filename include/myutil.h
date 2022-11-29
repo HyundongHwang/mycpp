@@ -6,6 +6,7 @@
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 class MyUtil {
 public:
