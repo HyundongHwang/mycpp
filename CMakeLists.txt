@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.23)
 
 # 프로젝트 정보
 project(
-        mycpp
+        my_cpp
         VERSION 0.1
         DESCRIPTION "예제 프로젝트"
         LANGUAGES CXX
@@ -33,21 +33,21 @@ include(FetchContent)
 FetchContent_Declare(
         googletest
         GIT_REPOSITORY https://github.com/google/googletest.git
-        GIT_TAG        release-1.12.1
+        GIT_TAG release-1.12.1
 )
 
 FetchContent_MakeAvailable(googletest)
 
 
 ################################################################################
-# mycpp
+# my_cpp
 add_executable(
-        mycpp
+        my_cpp
         src/main.cpp
 )
 
 target_link_libraries(
-        mycpp
+        my_cpp
         gtest
         gmock
         gtest_main
@@ -56,20 +56,19 @@ target_link_libraries(
 
 
 ################################################################################
-# mytest
+# my_test
 add_executable(
-        mytest
-        src/mytest.cpp
+        my_test
+        src/my_test.cpp
 )
 
 target_link_libraries(
-        mytest
+        my_test
         gtest
         gmock
         gtest_main
         logsloth
 )
-
 
 
 ################################################################################

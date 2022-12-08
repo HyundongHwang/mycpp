@@ -1,7 +1,3 @@
-#include "logsloth.h"
-#include "myutil.h"
-#include "my_int.h"
-
 #include <algorithm>
 #include <array>
 #include <chrono>
@@ -15,6 +11,10 @@
 #include <random>
 #include <set>
 #include <vector>
+
+#include "logsloth.h"
+#include "my_util.h"
+#include "my_int.h"
 
 void _p10_namespace() {
   auto tNow = std::chrono::system_clock::now();
@@ -671,36 +671,33 @@ void _funcRef(const MyInt &obj) {
 void _p201_thread_pass_param() {
   MyInt param(123);
   //--------------------------------------------------------------------------------
-  // MyInt() _i:123
+  // 12-08 13:18:14.219 12032 -1444639049 D LOGSLOTH: my_int.h:15:MyInt MyInt() _i:123
   //--------------------------------------------------------------------------------
 
   std::thread tCopy0([=] { LOGSLOTH("T_COPY_0 %d", param._i) });
   std::thread tCopy1(_funcCopy, param);
-  //--------------------------------------------------------------------------------
-  // ~MyInt() _i:123
-  // T_COPY_0 123
-  //--------------------------------------------------------------------------------
-
   tCopy0.join();
   tCopy1.join();
   //--------------------------------------------------------------------------------
-  // ~MyInt() _i:123
-  // FUNC_COPY obj:123
-  // ~MyInt() _i:123
-  // ~MyInt() _i:123
+  //  12-08 13:18:14.219 12032 -1444639049 D LOGSLOTH: my_int.h:19:~MyInt ~MyInt() _i:123
+  //  12-08 13:18:14.219 12032 1709724944 D LOGSLOTH: main.cpp:677:operator() T_COPY_0 123
+  //  12-08 13:18:14.219 12032 1709724944 D LOGSLOTH: my_int.h:19:~MyInt ~MyInt() _i:123
+  //  12-08 13:18:14.219 12032 -1554110588 D LOGSLOTH: main.cpp:664:_funcCopy FUNC_COPY obj:123
+  //  12-08 13:18:14.219 12032 -1554110588 D LOGSLOTH: my_int.h:19:~MyInt ~MyInt() _i:123
+  //  12-08 13:18:14.219 12032 -1554110588 D LOGSLOTH: my_int.h:19:~MyInt ~MyInt() _i:123
   //--------------------------------------------------------------------------------
 
   std::thread tRef0([&] { LOGSLOTH("T_REF_0 %d", param._i) });
   std::thread tRef1([&] { _funcRef(param); });
   //--------------------------------------------------------------------------------
-  // T_REF_0 123
-  // FUNC_REF obj:123
+  //  12-08 13:18:17.308 12032 -54332840 D LOGSLOTH: main.cpp:690:operator() T_REF_0 123
+  //  12-08 13:18:17.308 12032 -978509306 D LOGSLOTH: main.cpp:668:_funcRef FUNC_REF obj:123
   //--------------------------------------------------------------------------------
 
   tRef0.join();
   tRef1.join();
   //--------------------------------------------------------------------------------
-  // ~MyInt() _i:123
+  // 12-08 13:18:17.309 12032 -1444639049 D LOGSLOTH: my_int.h:19:~MyInt ~MyInt() _i:123
   //--------------------------------------------------------------------------------
 }
 
@@ -881,18 +878,23 @@ void _p220_async_get_deferred() {
 ////////////////////////////////////////////////////////////////////////////////
 
 void _product(std::promise<int> &&intPromise, int a, int b) {
+  LOGSLOTH("T_PRODUCT_START");
+  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
   intPromise.set_value(a * b);
+  LOGSLOTH("T_PRODUCT_FIN");
 }
 
 void _p224_future_promise() {
   std::promise<int> intPromise;
   auto intFuture = intPromise.get_future();
   std::thread t(_product, std::move(intPromise), 123, 456);
-  t.detach();
+  LOGSLOTH("THREAD_CREATED");
   auto res = intFuture.get();
   LOGSLOTH("res:%d", res);
   //--------------------------------------------------------------------------------
-  // res:56088
+  //  12-08 13:28:41.796 10056 1709724944 D LOGSLOTH: main.cpp:881:_product T_PRODUCT_START
+  //  12-08 13:28:42.811 10056 1709724944 D LOGSLOTH: main.cpp:884:_product T_PRODUCT_FIN
+  //  12-08 13:28:42.811 10056 -1444639049 D LOGSLOTH: main.cpp:893:_p224_future_promise res:56088
   //--------------------------------------------------------------------------------
 }
 
@@ -914,9 +916,9 @@ void _p230_optional() {
   //--------------------------------------------------------------------------------
 
   auto res2 = _get_str_len("");
-  LOGSLOTH("res2:%d:%d", res2.has_value(), res2);
+  LOGSLOTH("res2:%d:%d:%d", res2.has_value(), res2, res2 == std::nullopt);
   //--------------------------------------------------------------------------------
-  // res2:0:240569052
+  // res2:0:2040253148:1
   //--------------------------------------------------------------------------------
 }
 
@@ -939,7 +941,7 @@ void _p237_file_system() {
 ////////////////////////////////////////////////////////////////////////////////
 
 int main(int argc, char *argv[]) {
-  LogSlothLogger::init(false);
+//  LogSlothLogger::init(false);
 //  _p10_namespace();
 //  _p11_using();
 //  _p12_using_alias();
@@ -978,5 +980,5 @@ int main(int argc, char *argv[]) {
 //  _p220_async_get_deferred();
 //  _p224_future_promise();
 //  _p230_optional();
-  _p237_file_system();
+//  _p237_file_system();
 }

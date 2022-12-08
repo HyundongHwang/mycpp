@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.23)
 project(
         logsloth
         VERSION 0.1
-        DESCRIPTION "예제 프로젝트"
+        DESCRIPTION "logsloth"
         LANGUAGES CXX
 )
 
